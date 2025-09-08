@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "Room.h"
+#include "Item.h"
 #include <iostream>
 #include <sstream>
 #include <algorithm>
@@ -51,6 +52,43 @@ void Player::look() const {
     }
 }
 
+void Player::look_item(const std::string& name) const {
+    if (!room_) { std::cout << "You are not in any room.\n"; return; }
+
+    if (Item* it = find_in_inventory(name)) {
+        std::cout << "\n[" << it->name() << "]\n" << it->description() << "\n";
+        return;
+    }
+    if (Item* it = room_->find_item(name)) {
+        std::cout << "\n[" << it->name() << "]\n" << it->description() << "\n";
+        return;
+    }
+    std::cout << "You don't see that item.\n";
+}
+
+Item* Player::find_in_inventory(const std::string& name) const {
+    const string needle = to_lower(name);
+    for (Item* it : bag_) {
+        if (to_lower(it->name()) == needle) return it;
+    }
+    return nullptr;
+}
+
+void Player::inventory() const {
+    if (bag_.empty()) {
+        std::cout << "Inventory: (empty)\n";
+        return;
+    }
+    std::cout << "Inventory (" << bag_.size() << "/" << kMaxInventory << "): ";
+    bool first = true;
+    for (Item* it : bag_) {
+        if (!first) std::cout << ", ";
+        std::cout << it->name();
+        first = false;
+    }
+    std::cout << "\n";
+}
+
 // ---------- go ----------
 void Player::go(const std::string& dir_raw) {
     if (!room_) { std::cout << "You can't move right now.\n"; return; }
@@ -65,21 +103,65 @@ void Player::go(const std::string& dir_raw) {
     }
 }
 
+
+bool Player::add_to_inventory(Item& it) {
+    // already have this pointer? (avoid dup push)
+    if (std::find(bag_.begin(), bag_.end(), &it) != bag_.end()) return true;
+    if (bag_.size() >= kMaxInventory) return false;
+    bag_.push_back(&it);
+    return true;
+}
+
+bool Player::take(const std::string& name) {
+    if (!room_) return false;
+    Item* it = room_->find_item(name);
+    if (!it) { std::cout << "You don't see that item here.\n"; return false; }
+    return take_item(*this, *room_, *it); // implemented in item.cpp
+}
+
 // ---------- commands  ----------
 void Player::print_help() {
     std::cout
         << "Commands:\n"
         << "  help                - show this help\n"
         << "  look                - describe the current room\n"
+        << "  look <item>         - describe an item (room or inventory)\n"
+        << "  inventory/inv/i     - list inventory (max 5 items)\n"
+        << "  take <item>         - pick up an item from this room\n"
         << "  go <dir>            - move (north/south/east/west or n/s/e/w)\n"
         << "  quit/exit           - exit\n";
 }
 bool Player::handle_command(const std::string& line_in) {
-    string line = trim(to_lower(line_in)); if (line.empty()) return true;
-    std::istringstream iss(line); string cmd; iss >> cmd;
+    string line = trim(to_lower(line_in));
+    if (line.empty()) return true;
+
+    std::istringstream iss(line);
+    string cmd; iss >> cmd;
+
     if (cmd == "quit" || cmd == "exit") { std::cout << "See you later!\n"; return false; }
     if (cmd == "help") { print_help(); return true; }
-    if (cmd == "look") { look(); return true; }
-    if (cmd == "go") { string d; iss >> d; if (d.empty()) std::cout << "Usage: go <north|south|east|west>\n"; else go(d); return true; }
-    std::cout << "I don't understand. Type 'help'.\n"; return true;
+
+    if (cmd == "look") {
+        string arg; if (iss >> arg) look_item(arg); else look();
+        return true;
+    }
+
+    if (cmd == "inventory" || cmd == "inv" || cmd == "i") { inventory(); return true; }
+
+    if (cmd == "go") {
+        string dir; iss >> dir;
+        if (dir.empty()) std::cout << "Usage: go <north|south|east|west>\n";
+        else go(dir);
+        return true;
+    }
+
+    if (cmd == "take" || cmd == "get" || cmd == "pick") {
+        string what; iss >> what;
+        if (what.empty()) std::cout << "Usage: take <item>\n";
+        else take(what);
+        return true;
+    }
+
+    std::cout << "I don't understand. Type 'help'.\n";
+    return true;
 }

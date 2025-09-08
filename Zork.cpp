@@ -1,19 +1,22 @@
-// Zork.cpp : Este archivo contiene la función "main". La ejecución del programa comienza y termina ahí.
-//
-
 #include <iostream>
+#include "World.h"
+#include "Player.h"
 
-int main()
-{
-    std::cout << "Hello World!\n";
+int main() {
+    std::ios::sync_with_stdio(false);
+
+    World world;
+    Room& start = world.bootstrap(); 
+    Player player(start);
+
+    std::cout << "Welcome traveler. Type 'help' for commands.\n";
+    player.show_location(); 
+
+    std::string line;
+    while (true) {
+        std::cout << "\n> ";
+        if (!std::getline(std::cin, line)) break;
+        if (!player.handle_command(line)) break;
+    }
+    return 0;
 }
-
-// Ejecutar programa: Ctrl + F5 o menú Depurar > Iniciar sin depurar
-// Depurar programa: F5 o menú Depurar > Iniciar depuración
-
-// Sugerencias para primeros pasos: 1. Use la ventana del Explorador de soluciones para agregar y administrar archivos
-//   2. Use la ventana de Team Explorer para conectar con el control de código fuente
-//   3. Use la ventana de salida para ver la salida de compilación y otros mensajes
-//   4. Use la ventana Lista de errores para ver los errores
-//   5. Vaya a Proyecto > Agregar nuevo elemento para crear nuevos archivos de código, o a Proyecto > Agregar elemento existente para agregar archivos de código existentes al proyecto
-//   6. En el futuro, para volver a abrir este proyecto, vaya a Archivo > Abrir > Proyecto y seleccione el archivo .sln

@@ -169,11 +169,10 @@ void Player::go(const std::string& dir_raw) {
     }
 
     room_ = next;
-    show_location(); // only print the room name on entry
+    show_location();
 }
 
 bool Player::add_to_inventory(Item& it) {
-    // already have this pointer? (avoid dup push)
     if (std::find(bag_.begin(), bag_.end(), &it) != bag_.end()) return true;
     if (bag_.size() >= kMaxInventory) return false;
     bag_.push_back(&it);
@@ -213,7 +212,6 @@ bool Player::drop(const std::string & name) {
 }
 
 bool Player::place(const std::string & itemName) {
-    // Debes llevar la mochila
     Item * bag = bagpack_in_inventory();
 
     if (!bag || !bag->is_container()) {
@@ -221,20 +219,17 @@ bool Player::place(const std::string & itemName) {
         return false;
     }
 
-    // No puedes meter la propia mochila
     if (to_lower(itemName) == "bagpack") {
         std::cout << "You can't place the bagpack into itself.\n";
         return false;
     }
     
-    // El objeto debe estar en tu inventario
     Item * it = find_in_inventory(itemName);
     if (!it) {
         std::cout << "You are not carrying that.\n";
         return false;
     }
 
-    // Mover del inventario a la mochila (no hay vuelta atrás)
     remove_from_inventory(*it);
     bag->add_to_contents(*it);
     std::cout << "You place the " << it->name() << " into the bagpack.\n";

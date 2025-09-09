@@ -12,11 +12,10 @@ public:
     const std::string& name() const noexcept { return name_; }
     const std::string& description() const noexcept { return description_; }
 
-    // --- Container (simple) ---
     bool is_container() const noexcept { return is_container_; }
     void make_container() noexcept { is_container_ = true; }
-    void add_to_contents(Item & it);         // añadir a la mochila
-    void clear_contents() { contents_.clear(); }  // vaciar (p.ej. al soltar la mochila)
+    void add_to_contents(Item & it);
+    void clear_contents() { contents_.clear(); }
     const std::vector<Item*>&contents() const noexcept { return contents_; }
 
 private:

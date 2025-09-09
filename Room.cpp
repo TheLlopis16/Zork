@@ -12,6 +12,7 @@ static std::string lower_copy(std::string s) {
 Room::Room(std::string name, std::string description)
     : name_(std::move(name)), description_(std::move(description)) {}
 
+// Door Room 1
 void Room::add_exit(const std::string& canonical_dir, Room& destination) noexcept {
     exits_[canonical_dir] = &destination;
 }

@@ -12,10 +12,10 @@ public:
 
     void show_location() const; 
     void look() const;  
-    void look_item(const std::string& name) const;  // describe item (room or inventory)
-    void inventory() const;                  // list inventory
+    void look_item(const std::string& name) const;
+    void inventory() const;                 
     void go(const std::string& dir);
-    bool take(const std::string& name);      // command wrapper
+    bool take(const std::string& name);    
     bool add_to_inventory(Item& it);
 
     bool handle_command(const std::string& line);
@@ -32,4 +32,6 @@ private:
 
     Item* find_in_inventory(const std::string& name) const;
     static void print_help();
+
+    bool has_item(const std::string& name) const;
 };

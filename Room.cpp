@@ -21,6 +21,16 @@ Room* Room::get_exit(const std::string& canonical_dir) const noexcept {
     return (it == exits_.end()) ? nullptr : it->second;
 }
 
+void Room::add_locked_exit(const std::string & canonical_dir, Room & destination, std::string required_item) noexcept {
+    exits_[canonical_dir] = &destination;
+    locks_[canonical_dir] = lower_copy(std::move(required_item));
+}
+
+const std::string * Room::required_item_for(const std::string & canonical_dir) const noexcept {
+    auto it = locks_.find(canonical_dir);
+    return (it == locks_.end()) ? nullptr : &it->second;
+}
+
 // Items
 void Room::add_item(Item& it) noexcept {
     if (std::find(items_.begin(), items_.end(), &it) == items_.end())

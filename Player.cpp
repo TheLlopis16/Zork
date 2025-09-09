@@ -89,20 +89,35 @@ void Player::inventory() const {
     std::cout << "\n";
 }
 
-// ---------- go ----------
-void Player::go(const std::string& dir_raw) {
-    if (!room_) { std::cout << "You can't move right now.\n"; return; }
-
-    const string dir = canonical_dir(dir_raw);
-    if (Room* next = room_->get_exit(dir)) {
-        room_ = next;
-        show_location();         
-    }
-    else {
-        std::cout << "There is no exit towards \"" << dir_raw << "\".\n";
-    }
+bool Player::has_item(const std::string& name) const {
+    return find_in_inventory(name) != nullptr;
 }
 
+// ---------- go ----------
+void Player::go(const std::string& dir_raw) {
+    if (!room_) {
+        std::cout << "You can't move right now.\n";
+        return;
+    }
+
+    const string dir = canonical_dir(dir_raw);
+    Room* next = room_->get_exit(dir);
+    if (!next) {
+        std::cout << "There is no exit towards \"" << dir_raw << "\".\n";
+        return;
+    }
+
+    // If this exit is locked, require the needed item in inventory
+    if (const std::string* needed = room_->required_item_for(dir)) {
+        if (!has_item(*needed)) {
+            std::cout << "The way is locked. You need the " << *needed << ".\n";
+            return;
+        }
+    }
+
+    room_ = next;
+    show_location(); // only print the room name on entry
+}
 
 bool Player::add_to_inventory(Item& it) {
     // already have this pointer? (avoid dup push)

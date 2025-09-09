@@ -20,3 +20,8 @@ bool take_item(Player& player, Room& from, Item& item) {
     std::cout << "You take the " << item.name() << ".\n";
     return true;
 }
+
+void Item::add_to_contents(Item & it) {
+    if (std::find(contents_.begin(), contents_.end(), &it) == contents_.end())
+        contents_.push_back(&it);
+}

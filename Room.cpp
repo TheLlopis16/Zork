@@ -31,6 +31,10 @@ const std::string * Room::required_item_for(const std::string & canonical_dir) c
     return (it == locks_.end()) ? nullptr : &it->second;
 }
 
+void Room::unlock_exit(const std::string& canonical_dir) noexcept {
+    locks_.erase(canonical_dir);
+}
+
 // Items
 void Room::add_item(Item& it) noexcept {
     if (std::find(items_.begin(), items_.end(), &it) == items_.end())

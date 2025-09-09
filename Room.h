@@ -18,6 +18,7 @@ public:
 
     void add_locked_exit(const std::string& canonical_dir, Room& destination, std::string required_item) noexcept;
     const std::string* required_item_for(const std::string& canonical_dir) const noexcept;
+    void unlock_exit(const std::string& canonical_dir) noexcept;
 
     // Items
     void add_item(Item& it) noexcept;

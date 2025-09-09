@@ -17,7 +17,9 @@ public:
     void go(const std::string& dir);
     bool take(const std::string& name);    
     bool add_to_inventory(Item& it);
-    bool drop(const std::string& name);   
+    bool drop(const std::string& name);
+    bool place(const std::string& itemName);
+    bool remove_from_inventory(Item& it);  
 
     bool handle_command(const std::string& line);
 
@@ -35,4 +37,6 @@ private:
     static void print_help();
 
     bool has_item(const std::string& name) const;
+
+    Item* bagpack_in_inventory() const;
 };

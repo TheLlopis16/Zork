@@ -131,7 +131,19 @@ bool Player::take(const std::string& name) {
     if (!room_) return false;
     Item* it = room_->find_item(name);
     if (!it) { std::cout << "You don't see that item here.\n"; return false; }
-    return take_item(*this, *room_, *it); // implemented in item.cpp
+    return take_item(*this, *room_, *it); 
+}
+
+bool Player::drop(const std::string & name) {
+    Item * it = find_in_inventory(name);
+    if (!it) {
+        std::cout << "You are not carrying that.\n";
+        return false;
+    }
+    auto itp = std::find(bag_.begin(), bag_.end(), it);
+    if (itp != bag_.end()) bag_.erase(itp);  
+    std::cout << "You drop the " << it->name() << ". It vanishes.\n";
+    return true;
 }
 
 // ---------- commands  ----------
@@ -143,6 +155,7 @@ void Player::print_help() {
         << "  look <item>         - describe an item (room or inventory)\n"
         << "  inventory/inv/i     - list inventory (max 5 items)\n"
         << "  take <item>         - pick up an item from this room\n"
+        << "  drop <item>         - drop an item (it disappears)\n"
         << "  go <dir>            - move (north/south/east/west or n/s/e/w)\n"
         << "  quit/exit           - exit\n";
 }
@@ -174,6 +187,13 @@ bool Player::handle_command(const std::string& line_in) {
         string what; iss >> what;
         if (what.empty()) std::cout << "Usage: take <item>\n";
         else take(what);
+        return true;
+    }
+
+    if (cmd == "drop") {
+        string what; iss >> what;
+        if (what.empty()) std::cout << "Usage: drop <item>\n";
+        else drop(what);
         return true;
     }
 

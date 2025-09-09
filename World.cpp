@@ -17,9 +17,11 @@ Room& World::bootstrap() {
     Room& living = make_room("Living Room",
         "A big room with a sofa, a television, a ps5 and a coffee table with a key on it. To the east you return to the hall.");
     Room& hallway = make_room("Hallway",
-        "A narrow corridor connecting rooms.");
+        "A narrow corridor connecting two rooms.");
     Room& room1 = make_room("Room 1",
         "A tidy bedroom with a small window.");
+    Room& room2 = make_room("Room 2",
+        "A children's bedroom. Toys are scattered around (a ball, a teddybear and a little car).");
 
     // --- Connections ---
     // Hall <-> Living Room
@@ -36,6 +38,18 @@ Room& World::bootstrap() {
     // Hallway -> Room 1 (LOCKED: requires "key"); Room 1 -> Hallway (free)
     hallway.add_locked_exit("north", room1, "key");
     room1.add_exit("south", hallway);
+
+    // Hallway <-> Room 2 (libre, sin llave)
+    hallway.add_exit("south", room2);
+    room2.add_exit("north", hallway);
+
+    // Toys in Room 2
+    Item & ball = make_item("ball", "A red rubber ball.");
+    Item & teddy = make_item("teddybear", "A worn-out teddy bear with a missing eye.");
+    Item & car = make_item("car", "A small blue toy car.");
+    room2.add_item(ball);
+    room2.add_item(teddy);
+    room2.add_item(car);
 
     return hall; // starting room
 }

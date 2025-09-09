@@ -17,6 +17,7 @@ public:
     void go(const std::string& dir);
     bool take(const std::string& name);    
     bool add_to_inventory(Item& it);
+    bool drop(const std::string& name);   
 
     bool handle_command(const std::string& line);
 
